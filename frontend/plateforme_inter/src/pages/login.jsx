@@ -15,13 +15,17 @@ function Login(){
         setChargement(true);
         try{
             const reponse=await login({email,password});
+            console.log('Email utilisé :', email);
+            console.log('Rôle reçu :', reponse.data.user.role);
+            console.log('Utilisateur complet :', reponse.data.user);
             localStorage.setItem('token',reponse.data.token);
             localStorage.setItem('user',JSON.stringify(reponse.data.user));
+            window.dispatchEvent(new Event('storage'));
 
             const role= reponse.data.user.role;
-            if(role==='client')navigate('/client');
-            else if(role==='technicien')navigate('/technicien');
-            else if(role==='planificateur')navigate('/planificateur');
+            if(role==='client')  navigate('/client');
+            else if(role==='technicien') navigate('/technicien');
+            else if (role==='planificateur') navigate('/planificateur');
         }catch(err){
             setErreur(err.response?.data?.message ||'erreur de connexion');
         }finally{
