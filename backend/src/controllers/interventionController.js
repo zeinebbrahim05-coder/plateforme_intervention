@@ -86,7 +86,7 @@ const updateInterventionStatus=async(req,res)=>{
     try{
         const id=req.params.id;
         const newStatut=req.body.statut;
-        const statutValid=['en attente','affecté','en cours','terminé'];
+        const statutValid=['en attente','affecté','en cours','termine'];
         if(!statutValid.includes(newStatut)){
             return res.status(400).json({
                 success:false,
