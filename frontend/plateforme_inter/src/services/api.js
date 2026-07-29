@@ -17,4 +17,7 @@ export const getMyTickets=()=>api.get('/tickets/mes-tickets');
 export const getClientInterventions=()=>api.get('/interventions/client/mes-interventions');
 export const getRapport=(id)=>api.get(`/interventions/${id}/rapport`);
 export const addEvaluation=(id,data)=>api.put(`/interventions/${id}/evaluation`,data);
+export const getTechnicienInterventions=()=>api.get('/interventions/technicien/mes-interventions');
+export const updateInterventionStatus=(id,data)=>api.put(`/interventions/${id}/statut`,data);
+export const addRapport=(id,data)=>api.put(`/interventions/${id}/rapprt`,data);
 export default api;

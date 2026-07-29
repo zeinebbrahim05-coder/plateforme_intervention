@@ -1,0 +1,135 @@
+/* Conteneur principal */
+.dashboard-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+/* Sections */
+.section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+/* Cartes */
+.card {
+    list-style: none;
+    background: #f8f9fa;
+    border-left: 5px solid #007bff;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+}
+
+/* Statuts colorés */
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status.en-attente {
+    background: #dc3545;
+}
+.status.affecte {
+    background: #fd7e14;
+}
+.status.en-cours {
+    background: #0d6efd;
+}
+.status.termine {
+    background: #28a745;
+}
+
+/* Actions : statut + rapport */
+.status-update {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-update select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.rapport-add {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rapport-add textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Boutons */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #1f8a39;
+}
+
+.btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Messages */
+.error {
+    background: #f8d7da;
+    color: #842029;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.success {
+    background: #d1e7dd;
+    color: #0f5132;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}

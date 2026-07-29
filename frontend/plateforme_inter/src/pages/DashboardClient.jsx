@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import{createTicket, getMyTickets,getClientInterventions,getRapport,addEvaluation} from '../services/api';
+import"../styles/DashboardClient.css";
+import Header from "../components/header";
 function DashboardClient() {
     const[description,setDescription]=useState("");
     const[adresse,setAdresse]=useState("");
@@ -10,12 +12,12 @@ function DashboardClient() {
     const[tickets,setTickets]=useState([]);
     const[interventions,setInterventions]=useState([]);
     const[rapport,setRapport]=useState(null);
-    const[interventionId,setInterventionId]=useState(null);
-    const [note, setNote] = useState(5);
-    const [commentaire, setCommentaire] = useState("");
+    const[evaluations,setEvaluations]=useState({});
+
 
     useEffect(()=>{
         const fetchTickets=async()=>{
+            setErreur("");
             try{
                 const response=await getMyTickets();
                 setTickets(response.data.tickets);
@@ -24,6 +26,7 @@ function DashboardClient() {
             }
         };
         const fetchInterventions=async()=>{
+            setErreur("");
             try{
                 const response=await getClientInterventions();
                 setInterventions(response.data.intervention);
@@ -42,9 +45,9 @@ function DashboardClient() {
             await createTicket({description,adresse,priorite});
             setSuccess(true);
             setDescription('');setAdresse('');setPriorite('standard');
-            setTickets([]);
             const response=await getMyTickets();
             setTickets(response.data.tickets);
+            setTimeout(()=>{setSuccess(false);},3000);
 
 
         }catch(err){
@@ -54,18 +57,20 @@ function DashboardClient() {
         }
     }
     const handleVoirRapport=async(id)=>{
+        setErreur("");
         try{
             setRapport(null);
             const response=await getRapport(id);
             setRapport(response.data.rapport);
-            setInterventionId(id);
         }catch(err){
             setErreur("erreur lors du chargement du rapport");
         }
     };
     const handleEvaluation=async(id,note,commentaire)=>{
+        setErreur("");
         try{
             await addEvaluation(id,{note,commentaire});
+            setEvaluations((prev) => ({...prev,[id]: {note: 5,commentaire: ""}}));
             const response=await getClientInterventions();
             setInterventions(response.data.intervention);
         }catch(err){
@@ -73,14 +78,18 @@ function DashboardClient() {
         }
     }
     return (
+        <>
+        <Header/>
         <div className="dashboard-container">
             <h1>Dashboard Client</h1>
             <p>Bienvenue sur votre espace client.</p>
+            {erreur && <p className="error">{erreur}</p>}
+            {success && <p className="success">Ticket créé avec succès.</p>}
             <div className="section">
                 <h2>Créer un ticket</h2>
                 <form onSubmit={handleSubmitTicket}>
-                    <input type="text" placeholder="Description" value={description} onChange={(e)=>setDescription(e.target.value)} />
-                    <input type="text" placeholder="Adresse" value={adresse} onChange={(e)=>setAdresse(e.target.value)} />
+                    <input type="text" placeholder="Description" value={description} onChange={(e)=>setDescription(e.target.value)} required/>
+                    <input type="text" placeholder="Adresse" value={adresse} onChange={(e)=>setAdresse(e.target.value)} required/>
                     <select value={priorite} onChange={(e)=>setPriorite(e.target.value)}>
                         <option value="standard">Standard</option>
                         <option value="urgent">Urgent</option>
@@ -94,7 +103,10 @@ function DashboardClient() {
                     <p>Aucun ticket pour le moment</p>
                 ):(
                     <ul>{tickets.map((ticket)=>(
-                        <li key={ticket.id}>{ticket.description}-{ticket.adresse}-{ticket.priorite}</li>
+                        <li key={ticket.id} className="card">
+                            <h3>{ticket.description}</h3>
+                            <p><strong>Adresse :</strong> {ticket.adresse}</p>
+                            <p><strong>Priorité :</strong> {ticket.priorite}</p></li>
                     ))}</ul>
                 )}
             </div>
@@ -104,37 +116,57 @@ function DashboardClient() {
                 <p>Aucune intervention pour le moment</p>
             ):(
                 <ul>{interventions.map((intervention)=>(
-                    <li key={intervention.id}>{intervention.description}-{intervention.statut}-{intervention.technicien_nom ?intervention.technicien_nom :("pas encore affecté")}
-                    <button onClick={()=>handleVoirRapport(intervention.id)}>voir rapport</button>
+                    <li key={intervention.id} className="card">
+
+                    <h3>{intervention.description}</h3>
+
+                    <p><strong>Statut :</strong>{" "}
+                        <span className={`status ${intervention.statut}`}>
+                            {intervention.statut}</span>
+                    </p>
+
+                    <p><strong>Technicien :</strong>{" "} {intervention.technicien_nom || "Pas encore affecté"}</p>
+                    <button onClick={() => handleVoirRapport(intervention.id)}className="btn btn-primary">Voir le rapport</button>
                     {intervention.statut === "termine" && (
-                        <div>
+                        <div className="evaluation">
                             <h4>Évaluer cette intervention</h4>
-                            <select onChange={(e) => setNote(e.target.value)}>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
+                            <select
+                                value={evaluations[intervention.id]?.note || 5}
+                                onChange={(e) =>setEvaluations({...evaluations,[intervention.id]: { ...evaluations[intervention.id],
+                                         note: Number(e.target.value)}})}>
+                                <option value="1">1 ⭐</option>
+                                <option value="2">2 ⭐⭐</option>
+                                <option value="3">3 ⭐⭐⭐</option>
+                                <option value="4">4 ⭐⭐⭐⭐</option>
+                                <option value="5">5 ⭐⭐⭐⭐⭐</option>
                             </select>
-                            <input type="text" placeholder="Commentaire" onChange={(e) => setCommentaire(e.target.value)} />
-                            <button onClick={() => handleEvaluation(intervention.id, note, commentaire)}>
+
+                            <input type="text" placeholder="Votre commentaire..." value={evaluations[intervention.id]?.commentaire || ""}
+                                onChange={(e) =>setEvaluations({
+                                        ...evaluations, [intervention.id]: {...evaluations[intervention.id],commentaire: e.target.value}})}/>
+
+                            <button onClick={() =>handleEvaluation(intervention.id,
+                                        evaluations[intervention.id]?.note || 5,
+                                        evaluations[intervention.id]?.commentaire || "")}className="btn btn-success">
                                 Envoyer l'évaluation
                             </button>
-                        </div>
-        )}
-                    </li>
 
+                        </div>
+                    )}
+
+                </li>
 
                 ))}</ul>
             )}
             </div>
             {rapport&&(
-                <div>
+                <div className="section">
                     <h3>Rapport de l'intervention</h3>
                     <p>{rapport}</p>
                 </div>
             )}
         </div>
+        </>
     );
 }
 
