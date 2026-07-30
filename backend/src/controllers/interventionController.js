@@ -202,4 +202,49 @@ const addEvaluation=async(req,res)=>{
 
     }
 }
-module.exports={create,getClientInterventions,getTechnicienInterventions,getInterventionById,updateInterventionStatus,addRapport,getRapport,addEvaluation};
+const getAllInterventions = async (req, res) => {
+    try {
+        const interventions = await Intervention.findAll();
+
+        return res.status(200).json({
+            success: true,
+            interventions
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Erreur lors de la récupération des interventions"
+        });
+    }
+};
+const affecterTechnicien=async(req,res)=>{
+    try{
+        console.log('req.params:',req.params);
+        console.log('req.body:',req.body);
+        const id =req.params.id;
+        const{technicien_id}=req.body;
+        const intervention=await Intervention.findById(id);
+        if(!intervention){
+            return res.status(404).json({
+                success: false,
+                message:"intervention non trouvée"
+            });
+
+        }
+        await Intervention.updateTechnicien(id,technicien_id);
+        return res.status(200).json({
+            success:true,
+            message:"technicien affecté avec succès"
+        });
+    }catch(error){
+        console.error(error);
+        return res.status(500).json({
+            success:false,
+            message:"erreur lors de l'affectation"
+        });
+    }
+};
+module.exports={create,getClientInterventions,getTechnicienInterventions,getInterventionById,updateInterventionStatus,addRapport,getRapport,addEvaluation,getAllInterventions,affecterTechnicien};

@@ -66,7 +66,7 @@ const updateTicketStatus=async(req,res)=>{
     try{
         const {id}=req.params;
         const newStatut=req.body.statut;
-        const statutValide=['en attente', 'en cours', 'termine'];
+        const statutValide=['en attente','affecte', 'en cours', 'termine'];
         if(!statutValide.includes(newStatut)){
             return res.status(400).json({
                 success:false,

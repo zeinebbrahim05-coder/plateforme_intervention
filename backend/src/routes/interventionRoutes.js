@@ -1,7 +1,7 @@
 const express=require('express');
 const router=express.Router();
 const {authenticate,authorize}=require("../middleware/auth");
-const{create,getClientInterventions,getTechnicienInterventions,updateInterventionStatus,getInterventionById,addRapport,getRapport,addEvaluation}=require('../controllers/interventionController');
+const{create,getClientInterventions,getTechnicienInterventions,updateInterventionStatus,getInterventionById,addRapport,getRapport,addEvaluation,getAllInterventions,affecterTechnicien}=require('../controllers/interventionController');
 const { route } = require('./ticketRoutes');
 router.post('/',authenticate, authorize(['planificateur']),create);
 router.get('/client/mes-interventions',authenticate,authorize(['client']),getClientInterventions);
@@ -11,4 +11,6 @@ router.put('/:id/statut',authenticate,authorize(['technicien','planificateur']),
 router.put('/:id/rapport',authenticate,authorize(['technicien']),addRapport);
 router.get('/:id/rapport',authenticate,authorize(['client','technicien','planificateur']),getRapport);
 router.put('/:id/evaluation',authenticate,authorize(['client']),addEvaluation);
+router.get('/',authenticate,authorize(['planificateur']),getAllInterventions);
+router.put('/:id/affecter',authenticate,authorize(['planificateur']),affecterTechnicien);
 module.exports=router;

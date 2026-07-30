@@ -67,6 +67,24 @@ where id=1;
 alter table interventions add column rapport text null;
 alter table interventions add column note int null check(note between 1 and 5);
 alter table interventions add column commentaire text null;
+update interventions set rapport="- Remplacement du câble. Vérification des connexions.Test complet du système."
+where id =1;
+update tickets set statut='en attente' where statut is null;
+alter table tickets modify column statut varchar(30) default 'en attente' check (statut in('en attente','affecté','en cours','termine'));
+alter table tickets drop check tickets_chk_1;
+alter table tickets add constraint tickets_chk_1 check (statut in('en attente','affecté','en cours','termine'));
+update tickets set statut = 'en attente' where statut is null or statut='';
+ALTER TABLE tickets DROP CHECK tickets_chk_1;
+ALTER TABLE tickets DROP CHECK tickets_chk_3;
+ALTER TABLE tickets ADD CONSTRAINT tickets_chk_1 
+CHECK (statut IN ('en attente','affecte','en cours','termine'));
+UPDATE tickets SET statut = 'affecte' WHERE statut LIKE 'affect%' AND statut != 'affecte';
+UPDATE tickets 
+SET statut = 'en attente' 
+WHERE statut IS NULL OR statut = '';
+UPDATE tickets 
+SET statut = 'en attente' 
+WHERE id = 2;
 show tables;
 describe users;
 describe techniciens;
@@ -76,4 +94,11 @@ describe interventions;
  select * from interventions;
  select password from users where id=3;
  SELECT id, nom, email, password FROM users WHERE email = 'karim@test.com';
- 
+ select * from tickets where client_id=2;
+ show create table tickets;
+ SELECT CONSTRAINT_NAME, CHECK_CLAUSE
+FROM information_schema.CHECK_CONSTRAINTS
+WHERE CONSTRAINT_SCHEMA = 'plateforme_intervention'
+AND CONSTRAINT_NAME LIKE '%tickets%';
+SELECT id, description, statut FROM tickets;
+

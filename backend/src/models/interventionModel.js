@@ -44,6 +44,29 @@ const Intervention={
     updateEvaluation:async(id,note, commentaire)=>{
         const[result]= await pool.execute("update interventions set note=?,commentaire=? where id=?",[note,commentaire,id]);
         return result.affectedRows>0;
-    }
+    },
+    findAll: async () => {
+    const [rows] = await pool.execute(`
+        SELECT interventions.*,
+               client.nom AS client_nom,
+               technicien.nom AS technicien_nom
+        FROM interventions
+        JOIN tickets
+            ON interventions.ticket_id = tickets.id
+        JOIN users AS client
+            ON tickets.client_id = client.id
+        JOIN users AS technicien
+            ON interventions.technicien_id = technicien.id
+    `);
+
+    return rows;
+},
+updateTechnicien: async (id, technicien_id) => {
+    const [result] = await pool.execute(
+        "UPDATE interventions SET technicien_id = ? WHERE id = ?",
+        [technicien_id, id]
+    );
+    return result.affectedRows > 0;
+}
 };
 module.exports =Intervention;
