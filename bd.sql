@@ -86,6 +86,17 @@ UPDATE tickets
 SET statut = 'en attente' 
 WHERE id = 2;
 show tables;
+alter table users add column latitude decimal(10,8) null;
+alter table users add column longtitude decimal(11,8) null;
+ALTER TABLE users CHANGE longtitude longitude DECIMAL(11,8) NULL;
+update users set latitude =36.8123, longitude=10.1815 where id=2;
+UPDATE users u
+JOIN techniciens t ON u.id = t.user_id
+SET u.latitude = t.latitude, u.longitude = t.longitude;
+ALTER TABLE interventions ADD COLUMN latitude DECIMAL(10,8) NULL;
+ALTER TABLE interventions ADD COLUMN longitude DECIMAL(11,8) NULL;
+UPDATE interventions SET latitude = 36.8500, longitude = 10.2000 WHERE id = 1;
+
 describe users;
 describe techniciens;
 describe interventions;

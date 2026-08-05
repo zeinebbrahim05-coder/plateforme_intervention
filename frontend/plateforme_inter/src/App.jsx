@@ -5,6 +5,7 @@ import Register from './pages/register';
 import DashboardClient from './pages/DashboardClient';
 import DashboardTechnicien from './pages/DashboardTechnicien';
 import DashboardPlanificateur from './pages/DashboardPlanificateur';
+import 'leaflet/dist/leaflet.css';
 
 function App() {
     const [token, setToken] = useState(localStorage.getItem('token'));

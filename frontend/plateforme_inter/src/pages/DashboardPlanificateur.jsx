@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import{getAllTickets,getAllInterventions,getAllUsers,updateInterventionStatus,affecterTechnicien,updateTicketStatus, getRapport}from "../services/api";
 import Header from "../components/header";
 import "../styles/DashboardPlanificateur.css";
+import Map from "../components/map";
 function DashboardPlanificateur() {
     const[tickets,setTickets]=useState([]);
     const[interventions,setInterventions]=useState([]);
@@ -80,7 +81,6 @@ function DashboardPlanificateur() {
         const matchPriorite= prioriteFilter==="toutes"|| i.priorite===prioriteFilter;
         return matchSearch && matchPriorite;
     });
-
  return (
     <>
         <Header />
@@ -197,6 +197,7 @@ function DashboardPlanificateur() {
                 )}
             </div>
         </div>
+        <Map techniciens={users.filter(u=> u.role==="technicien")} interventions={interventions} users={users} tickets={tickets}/>
     </>
 );
 }

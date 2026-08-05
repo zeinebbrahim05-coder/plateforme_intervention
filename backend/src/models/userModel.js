@@ -1,11 +1,11 @@
 const pool = require("../config/database");
 const User ={
     findAll:async()=>{
-        const[rows]=await pool.execute("SELECT id,nom,email,role,telephone,adresse,created_at,updated_at from users");
+        const[rows]=await pool.execute("SELECT id,nom,email,role,telephone,adresse,latitude,longitude,created_at,updated_at from users");
         return rows;
     },
     findById: async(id)=>{
-        const[rows]=await pool.execute("SELECT id,nom,email,role,telephone,adresse,created_at,updated_at FROM users WHERE id =?",[id]);
+        const[rows]=await pool.execute("SELECT id,nom,email,role,telephone,adresse,latitude,longitude,created_at,updated_at FROM users WHERE id =?",[id]);
         return rows[0];
 
     },
