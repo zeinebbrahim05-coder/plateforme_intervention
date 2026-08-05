@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import{createTicket, getMyTickets,getClientInterventions,getRapport,addEvaluation} from '../services/api';
+import{createTicket, getMyTickets,getClientInterventions,getRapport,addEvaluation,updateUserLocation} from '../services/api';
 import"../styles/DashboardClient.css";
 import Header from "../components/header";
 function DashboardClient() {
@@ -77,6 +77,28 @@ function DashboardClient() {
             setErreur("erreur lors de l'ajout de l'evaluation");
         }
     }
+    const shareLocation=()=>{
+        if(!navigator.geolocation){
+            setErreur("la géocalisation n'est pas supportée par votre navigateur");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            async(position)=>{
+                const{latitude, longitude}=position.coords;
+                try{
+                    await updateUserLocation(latitude, longitude);
+                    setSuccess("Position partagée avec succès");
+                    setTimeout(()=>setSuccess(false),3000);
+                }catch(err){
+                    setErreur("erreur lors de l'envoi de la position");
+                }
+                
+            },
+            (error)=>{
+                setErreur("accès a la position refusé ou indisponible");
+            }
+        );
+    };
     return (
         <>
         <Header/>
@@ -94,6 +116,7 @@ function DashboardClient() {
                         <option value="standard">Standard</option>
                         <option value="urgent">Urgent</option>
                     </select>
+                    <button className="btn btn-info" onClick={shareLocation}>Partager ma position</button>
                     <button type="submit" className="btn btn-primary">Créer un ticket</button>
                 </form>
             </div>
