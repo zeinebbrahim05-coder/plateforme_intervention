@@ -209,7 +209,7 @@
 }
 
 .status.en-attente { background: #dc3545; }
-.status.affecte { background: #fd7e14; }
+.status.affecté { background: #fd7e14; }
 .status.en-cours { background: #0d6efd; }
 .status.termine { background: #28a745; }
 

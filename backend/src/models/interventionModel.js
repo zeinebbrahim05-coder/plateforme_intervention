@@ -2,7 +2,7 @@ const pool= require('../config/database');
 const Intervention={
     create: async(interventionData)=>{
         const{ticket_id,technicien_id,description,adresse,priorite}=interventionData;
-        const[result]=await pool.execute("insert into interventions(ticket_id,technicien_id,description,adresse,priorite) values(?,?,?,?,?)",[ticket_id,technicien_id,description,adresse,priorite ||"standard"]);
+        const[result]=await pool.execute("insert into interventions(ticket_id,technicien_id,description,adresse,priorite,statut) values(?,?,?,?,?,?)",[ticket_id,technicien_id,description,adresse,priorite ||"standard" ,"affecté"]);
         return result.insertId;
     },
 

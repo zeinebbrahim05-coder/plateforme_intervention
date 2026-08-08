@@ -1,7 +1,11 @@
 const pool = require("../config/database");
 const User ={
     findAll:async()=>{
-        const[rows]=await pool.execute("SELECT id,nom,email,role,telephone,adresse,latitude,longitude,created_at,updated_at from users");
+        const[rows]=await pool.execute(`SELECT users.id, users.nom, users.email, users.role, users.telephone, users.adresse,
+            users.latitude, users.longitude, users.created_at, users.updated_at,
+            techniciens.competences, techniciens.disponible
+        FROM users
+        LEFT JOIN techniciens ON techniciens.user_id = users.id`);
         return rows;
     },
     findById: async(id)=>{
@@ -27,6 +31,12 @@ const User ={
     delete: async(id)=>{
         const[result]=await pool.execute("DELETE FROM users WHERE id =?",[id]);
         return result.affectedRows > 0;
+    },
+    updateLocation: async(id, latitude, longitude)=>{
+        const[result]=await pool.execute(
+            "Update users set latitude =?, longitude=? where id=?",[latitude,longitude,id]
+        );
+        return result.affectedRows>0;
     }
 };
 module.exports=User;

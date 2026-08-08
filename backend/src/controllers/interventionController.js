@@ -1,4 +1,5 @@
 const Intervention=require('../models/interventionModel');
+const Ticket = require('../models/ticketModel');
 const create=async(req,res)=>{
     try{
         const {ticket_id,technicien_id,description,adresse,priorite}=req.body;
@@ -32,7 +33,6 @@ const getTechnicienInterventions=async(req,res)=>{
             success:false,
             message:"erreur lors de la recuperation des interventions du technicien"
         });
-
     }
 }
 const getInterventionById=async(req,res)=>{
@@ -101,6 +101,8 @@ const updateInterventionStatus=async(req,res)=>{
             });
         }
         await Intervention.updateStatus(id,newStatut);
+        const statutTicket=newStatut==='affecté' ?'affecte': newStatut;
+        await Ticket.updateStatus(checkIntervention.ticket_id,statutTicket);
         return res.status(200).json({
             success:true,
             message:"statut modifié"

@@ -120,8 +120,33 @@ const deleteUser=async(req,res)=>{
         });
     }
 };
+const updateUserLocation=async(req,res)=>{
+    try{
+        console.log("req.user: ",req.user);
+        const userId=req.user.id;
+        const{latitude, longitude}=req.body;
+        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            return res.status(400).json({
+                success: false,
+                message: "Coordonnées invalides"
+            });
+        }
+        await User.updateLocation(userId,latitude,longitude);
+        return res.status(200).json({
+            success: true,
+            message: "position mise a jour avec succès"
+        });
 
-module.exports={getUsers,getUsersById,createUser,updateUser,deleteUser};
+    }catch(error){
+        console.error(error);
+        return res.status(500).json({
+            success:false,
+            message:"erreur lors de la mise a jour de la position"
+        });
+    }
+};
+
+module.exports={getUsers,getUsersById,createUser,updateUser,deleteUser, updateUserLocation};
 
 
 

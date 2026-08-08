@@ -1,9 +1,11 @@
 const express=require('express');
 const router=express.Router();
-const {getUsers,getUsersById,createUser,updateUser,deleteUser}=require('../controllers/userController');
+const {getUsers,getUsersById,createUser,updateUser,deleteUser,updateUserLocation}=require('../controllers/userController');
+const{authenticate}=require('../middleware/auth');
 router.get('/',getUsers);
 router.get('/:id',getUsersById);
 router.post('/',createUser);
+router.put('/location',authenticate,updateUserLocation);
 router.put('/:id',updateUser);
 router.delete('/:id',deleteUser);
 module.exports=router;

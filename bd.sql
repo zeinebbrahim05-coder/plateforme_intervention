@@ -10,6 +10,7 @@ create table users( id int primary key auto_increment,
 nom varchar(100) not null, email varchar(100) unique not null,
 password varchar(300) not null, role varchar(30) default 'client' check(role in('client','technicien','planificateur')),
 telephone varchar(25), adresse text,
+latitude decimal(10,8) Null, longitude decimal(11,8) null,
 created_at timestamp default current_timestamp,
 updated_at timestamp default current_timestamp on update current_timestamp);
 
@@ -26,7 +27,7 @@ create table tickets( id int primary key auto_increment,
 client_id int not null,
 description text, date_creation datetime default now(),
 foreign key(client_id) references users(id),
-statut varchar(30) check(statut in('en attente','en cours','termine')),
+statut varchar(30) default 'en attente' check(statut in('en attente','affecte','en cours','termine')),
 priorite varchar(30) default 'standard' check(priorite in('standard','urgent')), 
 adresse varchar(200),
 created_at timestamp default current_timestamp,
@@ -41,75 +42,37 @@ adresse varchar(100) not null,
 statut varchar(30) check(statut in('en attente','affecté','en cours','termine')),
 priorite varchar(30) default 'standard' check(priorite in('standard','urgent')),
 date_creation datetime default now(),
+rapport text null,
+note int null check(note between 1 and 5),
+commentaire text null,
+latitude decimal(10,8) null,
+longitude decimal(11,8) null,
 foreign key(technicien_id) references users(id),
 foreign key(ticket_id) references tickets(id));
 
-insert into users(nom, email, password, role, telephone, adresse)
-values('admin principal', 'admin@plateforme.com', 'admin123','planificateur','1565284',
-'tunis');
-insert into users(nom, email, password, role, telephone, adresse) values('ahmed','ahmed@test.com','client123','client','5165489','tunisie');
-insert into users(nom, email, password, role, telephone, adresse) values('karim', 'karim@test.com','tech123','technicien','1546556','tunis');
-
-insert into tickets(client_id,description,statut,priorite,adresse) values(2,'fuite deau','en attente', 'urgent','ariana');
-insert into tickets (client_id, description, adresse, priorite) values (2, 'Fuite deau dans la cuisine', 'Ariana', 'urgent');
-insert into techniciens(user_id, competences,disponible, latitude,longitude) values(3, 'plomberie, electricité', true, 36.806495, 10.181532);
-insert into interventions(ticket_id, technicien_id,description,adresse,statut,priorite) values(1,3, 'fuite deau ','ariana','en cours','urgent');
-INSERT INTO interventions (ticket_id, technicien_id, description, adresse, statut, priorite)
-VALUES (1, 6, 'Test pour Karim Tech', 'Ariana', 'en cours', 'urgent');
-UPDATE users 
-SET password = '$2b$10$75PqKc01r9fumq8vucH/l.DNgQxZ.gm25fwm62CP1m19ibSIhcFyK' 
-WHERE id = 3;
-UPDATE users 
-SET password = '$2b$10$ABUcY97gRO/xo.ZGPRZWg.WHszU9Sg1KjqjU4mcvo6IeOtC7Xn1kq' 
-WHERE id = 2;
-update users set password='$2b$10$.QnfZ9hxleVryaXpIC4qwObpeu.Nuz/ONjgXrzK7ihzYKZIDoHtKK'
-where id=1;
-alter table interventions add column rapport text null;
-alter table interventions add column note int null check(note between 1 and 5);
-alter table interventions add column commentaire text null;
-update interventions set rapport="- Remplacement du câble. Vérification des connexions.Test complet du système."
-where id =1;
-update tickets set statut='en attente' where statut is null;
-alter table tickets modify column statut varchar(30) default 'en attente' check (statut in('en attente','affecté','en cours','termine'));
-alter table tickets drop check tickets_chk_1;
-alter table tickets add constraint tickets_chk_1 check (statut in('en attente','affecté','en cours','termine'));
-update tickets set statut = 'en attente' where statut is null or statut='';
-ALTER TABLE tickets DROP CHECK tickets_chk_1;
-ALTER TABLE tickets DROP CHECK tickets_chk_3;
-ALTER TABLE tickets ADD CONSTRAINT tickets_chk_1 
-CHECK (statut IN ('en attente','affecte','en cours','termine'));
-UPDATE tickets SET statut = 'affecte' WHERE statut LIKE 'affect%' AND statut != 'affecte';
-UPDATE tickets 
-SET statut = 'en attente' 
-WHERE statut IS NULL OR statut = '';
-UPDATE tickets 
-SET statut = 'en attente' 
-WHERE id = 2;
+insert into users(nom, email, password, role, telephone, adresse, latitude, longitude)
+values('admin principal', 'admin@plateforme.com','$2b$10$.QnfZ9hxleVryaXpIC4qwObpeu.Nuz/ONjgXrzK7ihzYKZIDoHtKK',
+'planificateur','1565284', 'Tunis', null, null),
+('Ahmed', 'ahmed@test.com',
+'$2b$10$ABUcY97gRO/xo.ZGPRZWg.WHszU9Sg1KjqjU4mcvo6IeOtC7Xn1kq',
+'client', '5165489', 'Ariana', 36.81230000, 10.18150000),
+('Karim', 'karim@test.com',
+'$2b$10$75PqKc01r9fumq8vucH/l.DNgQxZ.gm25fwm62CP1m19ibSIhcFyK',
+'technicien', '1546556', 'Tunis', 36.80649500, 10.18153200);
+insert into techniciens(user_id, competences,disponible, latitude, longitude)
+values(3,'plomberie, electricité',true,36.80649500,10.18153200);
+insert into tickets(client_id, description, adresse, statut, priorite)
+values(2,'fuite deau','Ariana','en attente', 'urgent'),
+(2,'fuite deau dans la cuisine','Ariana','en attente','urgent');
+insert into interventions(technicien_id,ticket_id, description, adresse, statut,priorite)
+values(3,1,'intervention pour fuite deau','Ariana','en cours','urgent');
 show tables;
-alter table users add column latitude decimal(10,8) null;
-alter table users add column longtitude decimal(11,8) null;
-ALTER TABLE users CHANGE longtitude longitude DECIMAL(11,8) NULL;
-update users set latitude =36.8123, longitude=10.1815 where id=2;
-UPDATE users u
-JOIN techniciens t ON u.id = t.user_id
-SET u.latitude = t.latitude, u.longitude = t.longitude;
-ALTER TABLE interventions ADD COLUMN latitude DECIMAL(10,8) NULL;
-ALTER TABLE interventions ADD COLUMN longitude DECIMAL(11,8) NULL;
-UPDATE interventions SET latitude = 36.8500, longitude = 10.2000 WHERE id = 1;
-
 describe users;
 describe techniciens;
 describe interventions;
- select * from users;
- select * from techniciens;
- select * from interventions;
- select password from users where id=3;
- SELECT id, nom, email, password FROM users WHERE email = 'karim@test.com';
- select * from tickets where client_id=2;
- show create table tickets;
- SELECT CONSTRAINT_NAME, CHECK_CLAUSE
-FROM information_schema.CHECK_CONSTRAINTS
-WHERE CONSTRAINT_SCHEMA = 'plateforme_intervention'
-AND CONSTRAINT_NAME LIKE '%tickets%';
-SELECT id, description, statut FROM tickets;
-
+describe tickets;
+SELECT id, nom, email, role, latitude, longitude
+FROM users;
+SELECT * FROM techniciens;
+select * from tickets;
+select *  from interventions;

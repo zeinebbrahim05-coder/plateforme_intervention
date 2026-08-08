@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import{getAllTickets,getAllInterventions,getAllUsers,updateInterventionStatus,affecterTechnicien,updateTicketStatus, getRapport}from "../services/api";
+import{getAllTickets,getAllInterventions,getAllUsers,updateInterventionStatus,affecterTechnicien,updateTicketStatus, getRapport, createIntervention}from "../services/api";
 import Header from "../components/header";
 import "../styles/DashboardPlanificateur.css";
 import Map from "../components/map";
@@ -39,7 +39,9 @@ function DashboardPlanificateur() {
         setChargement(true);
         setErreur("");
         try{
-            await affecterTechnicien(ticket.id,{technicien_id:selectedTechnicien[ticket.id]});
+            await createIntervention({ticket_id: ticket.id, technicien_id: selectedTechnicien[ticket.id],
+                description:ticket.description, adresse: ticket.adresse, priorite: ticket.priorite
+            });
             await updateTicketStatus(ticket.id,{statut:"affecte"});
             setSuccess(true);
             const[ticketRes,interventionsRes]=await Promise.all([getAllTickets(),getAllInterventions()]);
@@ -63,8 +65,9 @@ function DashboardPlanificateur() {
         try{
             await updateInterventionStatus(intervention.id,{statut:nouvStatut[intervention.id]});
             setSuccess(true);
-            const response=await getAllInterventions();
-            setInterventions(response.data.interventions);
+            const[interventionsRes,ticketsRes]=await Promise.all([getAllInterventions(),getAllTickets()]);
+            setInterventions(interventionsRes.data.interventions);
+            setTickets(ticketsRes.data.tickets);
             setNouvStatut(prev=>({...prev,[intervention.id]:""}));
             setTimeout(()=>setSuccess(false),3000);
 
@@ -185,7 +188,7 @@ function DashboardPlanificateur() {
                                 <div className="statuts_update">
                                     <select className="select-statut" value={nouvStatut[intervention.id]||intervention.statut} onChange={(e)=>setNouvStatut({...nouvStatut,[intervention.id]:e.target.value})}>
                                         <option value="en attente">En attente</option>
-                                        <option value="affecte">Affecté</option>
+                                        <option value="affecté">Affecté</option>
                                         <option value="en cours">En cours</option>
                                         <option value="termine">Terminé</option>
                                     </select>
