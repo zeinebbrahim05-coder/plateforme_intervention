@@ -26,6 +26,12 @@ const Ticket ={
     findAll:async()=>{
         const[rows]=await pool.execute("SELECT tickets.*, users.nom as client_nom FROM tickets join users on tickets.client_id=users.id ");
         return rows;
+    },
+    findByIdWithLocation:async(id)=>{
+        const[rows]=await pool.execute(`select tickets.*, users.latitude as client_latitude, users.longitude as client_longitude
+            from tickets
+            join users on tickets.client_id=users.id where tickets.id=?`,[id]);
+            return rows[0];
     }
 
 };

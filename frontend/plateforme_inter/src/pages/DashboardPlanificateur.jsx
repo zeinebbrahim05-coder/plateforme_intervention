@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import{getAllTickets,getAllInterventions,getAllUsers,updateInterventionStatus,affecterTechnicien,updateTicketStatus, getRapport, createIntervention}from "../services/api";
+import{getAllTickets,getAllInterventions,getAllUsers,updateInterventionStatus,affecterTechnicien,updateTicketStatus, getRapport, createIntervention,autoAffecter}from "../services/api";
 import Header from "../components/header";
 import "../styles/DashboardPlanificateur.css";
 import Map from "../components/map";
@@ -84,6 +84,22 @@ function DashboardPlanificateur() {
         const matchPriorite= prioriteFilter==="toutes"|| i.priorite===prioriteFilter;
         return matchSearch && matchPriorite;
     });
+    const handleAutoAffecter=async(ticket)=>{
+        setChargement(true);
+        setErreur("");
+        try{
+            const response=await autoAffecter(ticket.id);
+            setSuccess(true);
+            const[ticketRes,interventionsRes]=await Promise.all([getAllTickets(),getAllInterventions()]);
+            setTickets(ticketRes.data.tickets);
+            setInterventions(interventionsRes.data.interventions);
+            setTimeout(()=>setSuccess(false),3000);
+        }catch(err){
+            setErreur(err.response?.data?.message ||"erreur lors de l'affectation automatique");
+        }finally{
+            setChargement(false);
+        }
+    }
  return (
     <>
         <Header />
@@ -135,6 +151,7 @@ function DashboardPlanificateur() {
                                     </option>{users.filter((user) => user.role === "technicien") .map((user) => (<option key={user.id} value={user.id}>{user.nom}</option>))}
                                 </select>
                                 <button className="btn btn-primary" onClick={() =>handleAffecter(ticket)} disabled={ticket.statut !=="en attente"}> Affecter</button>
+                                <button className="btn btn-success" onClick={()=>handleAutoAffecter(ticket)} disabled={ticket.statut!=="en attente"}>affectation auto</button>
                             </li>
                         ))}
                     </ul>

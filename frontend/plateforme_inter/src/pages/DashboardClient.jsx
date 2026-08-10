@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import{createTicket, getMyTickets,getClientInterventions,getRapport,addEvaluation,updateUserLocation} from '../services/api';
+import{createTicket, getMyTickets,getClientInterventions,getRapport,addEvaluation} from '../services/api';
+import { useShareLocation } from "../hooks/useShareLocation";
 import"../styles/DashboardClient.css";
 import Header from "../components/header";
 function DashboardClient() {
@@ -77,28 +78,7 @@ function DashboardClient() {
             setErreur("erreur lors de l'ajout de l'evaluation");
         }
     }
-    const shareLocation=()=>{
-        if(!navigator.geolocation){
-            setErreur("la géocalisation n'est pas supportée par votre navigateur");
-            return;
-        }
-        navigator.geolocation.getCurrentPosition(
-            async(position)=>{
-                const{latitude, longitude}=position.coords;
-                try{
-                    await updateUserLocation(latitude, longitude);
-                    setSuccess("Position partagée avec succès");
-                    setTimeout(()=>setSuccess(false),3000);
-                }catch(err){
-                    setErreur("erreur lors de l'envoi de la position");
-                }
-                
-            },
-            (error)=>{
-                setErreur("accès a la position refusé ou indisponible");
-            }
-        );
-    };
+    const shareLocation= useShareLocation(setErreur,setSuccess);
     return (
         <>
         <Header/>

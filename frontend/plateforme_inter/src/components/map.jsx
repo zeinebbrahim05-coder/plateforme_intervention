@@ -24,6 +24,7 @@ function Map({techniciens=[], interventions=[], users=[], tickets=[]}){
                 return(
                 <Marker key={client.id} position={[Number(client.latitude),Number(client.longitude)]} icon={clientIcon}>
                     <Popup><strong>Client: {client.nom}</strong><br />
+                    {client.adresse}
                     <hr />
                     <strong>Ticket: </strong> <hr /><br />
                     {ticketFound.length===0?(<p>Aucun ticket</p>):

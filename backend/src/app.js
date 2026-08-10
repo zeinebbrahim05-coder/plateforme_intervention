@@ -12,6 +12,7 @@ app.use('/api/tickets',ticketRoutes);
 app.use('/api/users',userRoutes);
 app.use('/api/auth',authRoutes);
 app.use('/api/interventions',interventionRoutes);
+app.use('/api/techniciens',require('./routes/technicienRoutes'));
 app.get("/",(req,res)=>{res.send("bienvenue sur mon api");})
 app.listen(3000,()=>{console.log("serveur demarre sur le port 3000");});
 

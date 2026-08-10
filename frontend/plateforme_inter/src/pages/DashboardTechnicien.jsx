@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import{getTechnicienInterventions, updateInterventionStatus, addRapport} from "../services/api"
+import{getTechnicienInterventions, updateInterventionStatus, addRapport, updateDisponibilite} from "../services/api"
+import { useShareLocation } from "../hooks/useShareLocation";
 import Header from "../components/header";
 import "../styles/DashboardTechnicien.css"
 function DashboardTechnicien() {
@@ -66,6 +67,19 @@ function DashboardTechnicien() {
             setChargement(false);
         }
     }
+    const shareLocation=useShareLocation(setErreur,setSuccess);
+    const[disponible, setDisponible]=useState(true);
+    const toggleDisponibilite=async()=>{
+        try{
+            const nouvelleValeur=!disponible;
+            await updateDisponibilite(nouvelleValeur);
+            setDisponible(nouvelleValeur);
+            setSuccess(true);
+            setTimeout(()=>setSuccess(false),3000);
+        }catch(err){
+            setErreur("erreur lors de la mise a jour de la disponibilite");
+        }
+    }
 
     return (
 <>
@@ -73,7 +87,10 @@ function DashboardTechnicien() {
             <div className="dashboard-container">
                 <h1>Dashboard Technicien</h1>
                 <p>Bienvenue sur votre espace technicien.</p>
-                
+                <button className="btn btn-info" onClick={shareLocation}>Partager ma position</button>
+                <button className={disponible ? "btn btn-success" : "btn btn-warning"} onClick={toggleDisponibilite}>
+                    {disponible ? "Disponible ✓" : "Indisponible"}
+                </button>
                 {erreur && <p className="error">{erreur}</p>}
                 {success && <p className="success">Action effectuée avec succès !</p>}
                 

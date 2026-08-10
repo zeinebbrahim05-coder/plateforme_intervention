@@ -27,4 +27,6 @@ export const getAllUsers=()=>api.get('/users');
 export const affecterTechnicien=(id,data)=>api.put(`/interventions/${id}/affecter`,data);
 export const updateTicketStatus=(id,data)=>api.put(`/tickets/${id}/statut`,data);
 export const updateUserLocation=(latitude, longitude)=>api.put('/users/location',{latitude,longitude});
+export const autoAffecter=(ticketId)=>api.post(`/interventions/auto-affecter/${ticketId}`);
+export const updateDisponibilite=(disponible)=>api.put('/techniciens/disponibilite',{disponible});
 export default api;

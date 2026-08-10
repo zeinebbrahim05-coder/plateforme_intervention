@@ -67,6 +67,10 @@ updateTechnicien: async (id, technicien_id) => {
         [technicien_id, id]
     );
     return result.affectedRows > 0;
-}
+},
+findByTicketId: async(ticket_id)=>{
+    const [rows] = await pool.execute("SELECT * FROM interventions WHERE ticket_id = ?",[ticket_id]);
+    return rows[0];
+},
 };
 module.exports =Intervention;

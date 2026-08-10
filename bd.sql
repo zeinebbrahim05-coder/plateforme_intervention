@@ -64,8 +64,6 @@ values(3,'plomberie, electricité',true,36.80649500,10.18153200);
 insert into tickets(client_id, description, adresse, statut, priorite)
 values(2,'fuite deau','Ariana','en attente', 'urgent'),
 (2,'fuite deau dans la cuisine','Ariana','en attente','urgent');
-insert into interventions(technicien_id,ticket_id, description, adresse, statut,priorite)
-values(3,1,'intervention pour fuite deau','Ariana','en cours','urgent');
 show tables;
 describe users;
 describe techniciens;
@@ -76,3 +74,4 @@ FROM users;
 SELECT * FROM techniciens;
 select * from tickets;
 select *  from interventions;
+SELECT id, client_id, description, statut FROM tickets ORDER BY client_id, description, id;
