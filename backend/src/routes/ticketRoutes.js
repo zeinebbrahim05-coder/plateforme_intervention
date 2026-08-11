@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const {createTicket,getMyTickets,getTicketById,updateTicketStatus,getAllTickets}=require('../controllers/ticketController');
-const{authenticate}=require('../middleware/auth');
+const{authenticate, authorize}=require('../middleware/auth');
 router.post('/',authenticate,createTicket);
 router.get('/mes-tickets',authenticate,getMyTickets);
 router.get('/:id',getTicketById);
-router.put('/:id/statut',updateTicketStatus);
-router.get('/',getAllTickets);
+router.put('/:id/statut',authenticate, authorize(['planificateur']),updateTicketStatus);
+router.get('/',authenticate, authorize(['planificateur']),getAllTickets);
 module.exports=router;

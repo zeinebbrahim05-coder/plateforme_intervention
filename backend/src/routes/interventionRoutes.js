@@ -2,7 +2,7 @@ const express=require('express');
 const router=express.Router();
 const {authenticate,authorize}=require("../middleware/auth");
 const{create,getClientInterventions,getTechnicienInterventions,updateInterventionStatus,getInterventionById,addRapport,getRapport,addEvaluation,getAllInterventions,affecterTechnicien,autoAffecter}=require('../controllers/interventionController');
-const { route } = require('./ticketRoutes');
+
 router.post('/',authenticate, authorize(['planificateur']),create);
 router.get('/client/mes-interventions',authenticate,authorize(['client']),getClientInterventions);
 router.get('/technicien/mes-interventions',authenticate,authorize(['technicien']),getTechnicienInterventions);

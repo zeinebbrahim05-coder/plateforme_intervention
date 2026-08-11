@@ -11,7 +11,6 @@ const pool = mysql.createPool({
 async function testConnection() {
     try{
         const [rows] = await pool.query("SELECT* FROM users");
-        console.log(rows);
     }catch(err){
         console.error(err);
     }

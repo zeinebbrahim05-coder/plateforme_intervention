@@ -38,18 +38,19 @@ const getUsersById= async(req,res)=>{
         });
     }
     };
-
+const bcrypt = require('bcrypt');
 const createUser=async(req,res)=>{
     try{
         const{nom,email,password,role,telephone,adresse}=req.body;
         const checkuser=await User.findByEmail(email);
+        const hashedPassword = await bcrypt.hash(password, 10);
         if(checkuser){
             return res.status(400).json({
                 success:false,
                 message:"email existe deja"
             });
         }
-        const newuser= await User.create({nom,email,password,role,telephone,adresse});
+        const newuser= await User.create({nom,email,password : hashedPassword,role,telephone,adresse});
         return res.status(201).json({
             success:true,
             message:"utilisateur crée avec succès",

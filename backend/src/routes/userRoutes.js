@@ -1,11 +1,11 @@
 const express=require('express');
 const router=express.Router();
 const {getUsers,getUsersById,createUser,updateUser,deleteUser,updateUserLocation}=require('../controllers/userController');
-const{authenticate}=require('../middleware/auth');
-router.get('/',getUsers);
-router.get('/:id',getUsersById);
-router.post('/',createUser);
+const{authenticate, authorize}=require('../middleware/auth');
+router.get('/',authenticate,authorize(['planificateur']),getUsers);
+router.get('/:id',authenticate,authorize(['planificateur']),getUsersById);
+router.post('/',authenticate,authorize(['planificateur']),createUser);
 router.put('/location',authenticate,updateUserLocation);
-router.put('/:id',updateUser);
-router.delete('/:id',deleteUser);
+router.put('/:id',authenticate,authorize(['planificateur']),updateUser);
+router.delete('/:id',authenticate,authorize(['planificateur']),deleteUser);
 module.exports=router;

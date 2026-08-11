@@ -1,10 +1,10 @@
+create database if not exists plateforme_intervention;
+use plateforme_intervention;
+
 drop table if exists interventions;
 drop table if exists tickets;
 drop table if exists techniciens;
 drop table if exists users;
-
-create database if not exists plateforme_intervention;
-use plateforme_intervention;
 
 create table users( id int primary key auto_increment,
 nom varchar(100) not null, email varchar(100) unique not null,
