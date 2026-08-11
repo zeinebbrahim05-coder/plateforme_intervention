@@ -2,7 +2,10 @@ const pool = require("../config/database");
 const Technicien={
     findDisponible: async()=>{
         const [rows]=await pool.execute(`select techniciens.id, techniciens.user_id, techniciens.competences,
-            techniciens.disponible, users.latitude, users.longitude, users.nom
+            techniciens.disponible, users.latitude, users.longitude, users.nom,
+            (select count(*)from interventions i
+            where i.technicien_id = techniciens.user_id and 
+            i.statut !='termine') as charge_actuelle
             from techniciens join users on techniciens.user_id=users.id
             where techniciens.disponible=true
             and users.latitude is not null

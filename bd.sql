@@ -64,6 +64,19 @@ values(3,'plomberie, electricité',true,36.80649500,10.18153200);
 insert into tickets(client_id, description, adresse, statut, priorite)
 values(2,'fuite deau','Ariana','en attente', 'urgent'),
 (2,'fuite deau dans la cuisine','Ariana','en attente','urgent');
+INSERT INTO users (nom, email, password, role, telephone, adresse, latitude, longitude)
+VALUES ('Amine', 'amine@test.com',
+        '$2b$10$75PqKc01r9fumq8vucH/l.DNgQxZ.gm25fwm62CP1m19ibSIhcFyK',
+        'technicien', '20123456', 'Sousse', 35.82563000, 10.63690000);
+INSERT INTO techniciens (user_id, competences, disponible)
+VALUES (LAST_INSERT_ID(), 'électricité', true);
+INSERT INTO users (nom, email, password, role, telephone, adresse, latitude, longitude)
+VALUES ('Sami', 'sami.client@test.com',
+        '$2b$10$ABUcY97gRO/xo.ZGPRZWg.WHszU9Sg1KjqjU4mcvo6IeOtC7Xn1kq',
+        'client', '20654321', 'Sousse', 35.82800000, 10.64000000);
+INSERT INTO tickets (client_id, description, adresse, statut, priorite)
+VALUES (LAST_INSERT_ID(), 'panne électrique', 'Sousse', 'en attente', 'urgent');
+
 show tables;
 describe users;
 describe techniciens;
@@ -75,3 +88,16 @@ SELECT * FROM techniciens;
 select * from tickets;
 select *  from interventions;
 SELECT id, client_id, description, statut FROM tickets ORDER BY client_id, description, id;
+SELECT t.user_id, u.nom, t.disponible, u.latitude, u.longitude
+FROM techniciens t
+JOIN users u ON t.user_id = u.id;
+SELECT ti.id AS ticket_id, ti.description, u.nom AS client_nom, u.latitude, u.longitude
+FROM tickets ti
+JOIN users u ON ti.client_id = u.id
+WHERE ti.description = 'panne';
+SELECT id, nom, role FROM users WHERE nom LIKE '%amine%';
+SELECT i.id, i.ticket_id, i.technicien_id, u.nom AS technicien_nom, i.statut
+FROM interventions i
+JOIN users u ON i.technicien_id = u.id
+JOIN tickets t ON i.ticket_id = t.id
+WHERE t.description = 'panne électrique';

@@ -2,6 +2,7 @@ const Intervention=require('../models/interventionModel');
 const Ticket = require('../models/ticketModel');
 const Technicien = require('../models/technicienModel');
 const {distanceKm}=require('../utils/distance');
+const{scoreFinal}=require('../utils/scoring');
 const User = require('../models/userModel');
 const create=async(req,res)=>{
     try{
@@ -304,8 +305,21 @@ const autoAffecter=async(req,res)=>{
         const avecDistance=disponible.map(t=>({
             ...t, distance:distanceKm(ticket.client_latitude,ticket.client_longitude, t.latitude, t.longitude)
         }));
-        avecDistance.sort((a,b)=>a.distance - b.distance);
-        const meilleur=avecDistance[0];
+        const distanceMax = Math.max(...avecDistance.map(t=>t.distance), 0.0001);
+
+        const avecScore = avecDistance.map(t=>{
+            const { score, detail } = scoreFinal({
+                distance: t.distance,
+                distanceMax,
+                competences: t.competences,
+                description: ticket.description,
+                chargeActuelle: t.charge_actuelle,
+                priorite: ticket.priorite
+            });
+            return { ...t, score, detail };
+        });
+        avecScore.sort((a,b)=>b.score - a.score);
+        const meilleur=avecScore[0];
         const interventionId=await Intervention.create({
             ticket_id:ticket.id, technicien_id:meilleur.user_id,
             description:ticket.description,
@@ -318,7 +332,11 @@ const autoAffecter=async(req,res)=>{
             success:true,
             message:"techncien affecté automatiquement",
             interventionId,
-            technicien:{id: meilleur.user_id, nom:meilleur.nom, distance_km:Math.round(meilleur.distance*10)/10}
+            technicien:{id: meilleur.user_id, nom:meilleur.nom, distance_km:Math.round(meilleur.distance*10)/10,
+                score: Math.round(meilleur.score*100)/100,
+                charge_actuelle:meilleur.charge_actuelle,
+                detail_score: meilleur.detail
+            }
         });
     }catch(error){
         console.error(error);
