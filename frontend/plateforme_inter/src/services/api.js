@@ -29,4 +29,7 @@ export const updateTicketStatus=(id,data)=>api.put(`/tickets/${id}/statut`,data)
 export const updateUserLocation=(latitude, longitude)=>api.put('/users/location',{latitude,longitude});
 export const autoAffecter=(ticketId)=>api.post(`/interventions/auto-affecter/${ticketId}`);
 export const updateDisponibilite=(disponible)=>api.put('/techniciens/disponibilite',{disponible});
+export const updateUser = (id, data) => api.put(`/users/${id}`, data);
+export const createUser=(data)=>api.post('/users',data);
+export const deleteUser=(id)=>api.delete(`/users/${id}`);
 export default api;

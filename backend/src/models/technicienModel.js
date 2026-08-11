@@ -29,6 +29,15 @@ const Technicien={
     findByUserId: async(user_id)=>{
     const [rows] = await pool.execute("SELECT * FROM techniciens WHERE user_id = ?",[user_id]);
     return rows[0];
-},
+    },
+    updateInfos:async(user_id, competencesScore, disponible)=>{
+        const[result]= await pool.execute("update techniciens set competences=?, disponible=? where user_id=?",[competencesScore, disponible, user_id]);
+        return result.affectedRows>0;
+    },
+    delete: async(user_id)=>{
+        const[result]= await pool.execute("delete from techniciens where user_id=?",[user_id]);
+        return result.affectedRows>0;
+    }
+
 };
 module.exports=Technicien;

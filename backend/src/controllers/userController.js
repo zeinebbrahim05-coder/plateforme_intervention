@@ -1,5 +1,6 @@
 
 const User=require("../models/userModel");
+const Technicien = require("../models/technicienModel");
 const getUsers = async(req,res)=>{
     try{
     const users = await User.findAll();
@@ -43,14 +44,17 @@ const createUser=async(req,res)=>{
     try{
         const{nom,email,password,role,telephone,adresse}=req.body;
         const checkuser=await User.findByEmail(email);
-        const hashedPassword = await bcrypt.hash(password, 10);
         if(checkuser){
             return res.status(400).json({
                 success:false,
                 message:"email existe deja"
             });
         }
+        const hashedPassword= await bcrypt.hash(password,10);
         const newuser= await User.create({nom,email,password : hashedPassword,role,telephone,adresse});
+        if(role === 'technicien'){
+            await Technicien.create(newuser);
+        }
         return res.status(201).json({
             success:true,
             message:"utilisateur crée avec succès",
@@ -72,7 +76,7 @@ const createUser=async(req,res)=>{
 const updateUser=async(req,res)=>{
     try{
         const{id}=req.params;
-        const{nom,email,telephone,adresse}=req.body;
+        const{nom,email,telephone,adresse, competences, disponible}=req.body;
         const checkuser= await User.findById(id);
         if(!checkuser){
             return res.status(404).json({
@@ -81,6 +85,9 @@ const updateUser=async(req,res)=>{
             });
         }
         await User.update(id,{nom,email,telephone,adresse});
+        if(checkuser.role ==='technicien' && competences !== undefined && disponible !== undefined){
+            await Technicien.updateInfos(id, competences, disponible);
+        }
         return res.status(200).json({
             success:true,
             message:"utilisateur modifié avec succée"
@@ -107,6 +114,9 @@ const deleteUser=async(req,res)=>{
                 message:"utilisateur n'existe pas"
             });
         }
+        if(checkuser.role ==='technicien'){
+            await Technicien.delete(id);
+        }
         await User.delete(id);
         return res.status(200).json({
             success:true,
@@ -115,6 +125,12 @@ const deleteUser=async(req,res)=>{
         
     }catch(error){
         console.error(error);
+        if(error.code=== 'ER_ROW_IS_REFERENCED_2'){
+            return res.status(400).json({
+                success:false,
+                message:"impossible de supprimer: cet utilisateur a des tickets ou interventions liés"
+            });
+        }
         return res.status(500).json({
             success:false,
             message:"erreur lor de la suppression"
