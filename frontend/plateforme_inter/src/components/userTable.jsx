@@ -31,7 +31,7 @@ function UserTable({users, role, title, onEdit, onDelete}){
                                 <>
                                     <td>{user.competences || "-"}</td>
                                     <td>
-                                        <span className={`status ${user.disponible ? 'disponible' : 'indisponible'}`}>
+                                        <span className={`status ${user.disponible ? 'status-disponible' : 'status-indisponible'}`}>
                                             {user.disponible ? 'Oui' : 'Non'}
                                         </span>
                                     </td>

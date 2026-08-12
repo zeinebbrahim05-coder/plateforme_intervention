@@ -5,7 +5,7 @@ function competencesScore(competencesStr, descriptionStr){
     const matched= mots.some(mot=>description.includes(mot));
     return matched? 1 :0.3;
 }
-function chargeScorre(nombreInterventionsActives){
+function chargeScore(nombreInterventionsActives){
     return 1/(1+nombreInterventionsActives);
 }
 function distanceScore(distance, distanceMax){
@@ -19,11 +19,11 @@ function scoreFinal({distance, distanceMax, competences, description, chargeActu
     :{distance:0.4, competences:0.3, charge:0.3};
     const dScore= distanceScore(distance, distanceMax);
     const cScore= competencesScore(competences, description);
-    const chScore= chargeScorre(chargeActuelle);
+    const chScore= chargeScore(chargeActuelle);
 
     return{
         score:poids.distance * dScore+poids.competences * cScore + poids.charge * chScore,
-        detail:{distanceScore: dScore, competencesScore: cScore, chargeScorre: chScore, poids}
+        detail:{distanceScore: dScore, competencesScore: cScore, chargeScore: chScore, poids}
     };
 }
-module.exports={competencesScore, chargeScorre, distanceScore, scoreFinal};
+module.exports={competencesScore, chargeScore, distanceScore, scoreFinal};

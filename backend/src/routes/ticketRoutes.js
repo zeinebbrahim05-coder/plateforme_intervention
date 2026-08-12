@@ -4,7 +4,7 @@ const {createTicket,getMyTickets,getTicketById,updateTicketStatus,getAllTickets}
 const{authenticate, authorize}=require('../middleware/auth');
 router.post('/',authenticate,createTicket);
 router.get('/mes-tickets',authenticate,getMyTickets);
-router.get('/:id',getTicketById);
+router.get('/:id', authenticate,authorize(['client','technicien', 'planificateur']),getTicketById);
 router.put('/:id/statut',authenticate, authorize(['planificateur']),updateTicketStatus);
 router.get('/',authenticate, authorize(['planificateur']),getAllTickets);
 module.exports=router;
