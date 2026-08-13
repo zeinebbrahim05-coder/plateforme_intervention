@@ -1,6 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import L from 'leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import React from 'react';
 
 export const technicienIcon=new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',

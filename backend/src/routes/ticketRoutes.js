@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {createTicket,getMyTickets,getTicketById,updateTicketStatus,getAllTickets}=require('../controllers/ticketController');
 const{authenticate, authorize}=require('../middleware/auth');
-router.post('/',authenticate,createTicket);
+router.post('/',authenticate,authorize(['client']),createTicket);
 router.get('/mes-tickets',authenticate,getMyTickets);
 router.get('/:id', authenticate,authorize(['client','technicien', 'planificateur']),getTicketById);
 router.put('/:id/statut',authenticate, authorize(['planificateur']),updateTicketStatus);

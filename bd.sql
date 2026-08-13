@@ -47,6 +47,11 @@ note int null check(note between 1 and 5),
 commentaire text null,
 latitude decimal(10,8) null,
 longitude decimal(11,8) null,
+date_prevue date null,
+heure_debut time null,
+heure_fin time null,
+duree_estimee int null,
+code_postal varchar(10) null,
 foreign key(technicien_id) references users(id),
 foreign key(ticket_id) references tickets(id));
 
@@ -76,6 +81,25 @@ VALUES ('Sami', 'sami.client@test.com',
         'client', '20654321', 'Sousse', 35.82800000, 10.64000000);
 INSERT INTO tickets (client_id, description, adresse, statut, priorite)
 VALUES (LAST_INSERT_ID(), 'panne électrique', 'Sousse', 'en attente', 'urgent');
+INSERT INTO interventions (technicien_id, ticket_id, description, adresse, statut, priorite)
+VALUES
+(3, 1, 'fuite deau', 'Ariana', 'affecté', 'urgent'),
+(4, 3, 'panne électrique', 'Sousse', 'affecté', 'urgent');
+
+UPDATE interventions
+SET 
+    date_prevue = '2026-08-12',
+    heure_debut = '09:00:00',
+    heure_fin = '10:00:00',
+    code_postal = '1000'
+WHERE id = 1;
+UPDATE interventions
+SET 
+    date_prevue = '2026-08-13',
+    heure_debut = '10:00:00',
+    heure_fin = '11:00:00',
+    code_postal = '2000'
+WHERE id = 2;
 
 show tables;
 describe users;
@@ -101,3 +125,30 @@ FROM interventions i
 JOIN users u ON i.technicien_id = u.id
 JOIN tickets t ON i.ticket_id = t.id
 WHERE t.description = 'panne électrique';
+SELECT 
+    i.id,
+    i.description,
+    i.technicien_id,
+    u.nom AS technicien_nom,
+    i.date_prevue,
+    i.heure_debut,
+    i.heure_fin,
+    i.statut,
+    i.priorite
+FROM interventions i
+LEFT JOIN users u ON i.technicien_id = u.id
+ORDER BY i.date_prevue, i.heure_debut;
+SELECT * FROM interventions;
+SELECT 
+    i.id,
+    i.description,
+    i.technicien_id,
+    u.nom AS technicien_nom,
+    i.date_prevue,
+    i.heure_debut,
+    i.heure_fin,
+    i.statut,
+    i.priorite
+FROM interventions i
+LEFT JOIN users u ON i.technicien_id = u.id
+ORDER BY i.date_prevue, i.heure_debut;

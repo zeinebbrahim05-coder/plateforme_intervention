@@ -12,10 +12,11 @@ export function useShareLocation(setErreur, setSuccess){
                     await updateUserLocation(latitude,longitude);
                     setSuccess(true);
                     setTimeout(()=>setSuccess(false),3000);
-                }catch(err){
+                }catch{
                     setErreur("erreur lors de l'envoi de la position");
                 }
             },(error)=>{
+                console.error(error);
                 setErreur("accès a la position refusé ou indisponible");
             }
         );

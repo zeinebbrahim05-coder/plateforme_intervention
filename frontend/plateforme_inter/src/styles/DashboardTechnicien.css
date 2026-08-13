@@ -1,60 +1,267 @@
-/* Conteneur principal */
+/* =========================================
+   DASHBOARD TECHNICIEN - Style professionnel
+   ========================================= */
+
+/* =========================================
+   CONTENEUR PRINCIPAL
+   ========================================= */
+
 .dashboard-container {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 20px;
+    padding: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* Sections */
+/* =========================================
+   EN-TÊTE
+   ========================================= */
+
+.dashboard-container h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e1b3a;
+    margin: 0 0 4px 0;
+}
+
+.dashboard-container > p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 20px 0;
+}
+
+/* =========================================
+   STATISTIQUES - GRILLE
+   ========================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e8e6f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(30, 27, 58, .04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(30, 27, 58, .08);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-icon.purple { background: #eeedfe; color: #7b52d4; }
+.stat-icon.blue { background: #e9efff; color: #4f46e5; }
+.stat-icon.green { background: #e6f6ed; color: #1e9e63; }
+.stat-icon.amber { background: #fdf3e1; color: #b7791f; }
+.stat-icon.red { background: #fbeae8; color: #c0392b; }
+
+.stat-card span {
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.stat-card strong {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e1b3a;
+}
+
+/* =========================================
+   ACTIONS RAPIDES
+   ========================================= */
+
+.dashboard-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.dashboard-actions .btn {
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dashboard-actions .btn:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-actions .btn-info {
+    background: #4f46e5;
+    color: white;
+}
+
+.dashboard-actions .btn-info:hover {
+    background: #3d37c4;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, .3);
+}
+
+.dashboard-actions .btn-success {
+    background: #1e9e63;
+    color: white;
+}
+
+.dashboard-actions .btn-success:hover {
+    background: #168a56;
+    box-shadow: 0 4px 12px rgba(30, 158, 99, .3);
+}
+
+.dashboard-actions .btn-warning {
+    background: #b7791f;
+    color: white;
+}
+
+.dashboard-actions .btn-warning:hover {
+    background: #a0661a;
+    box-shadow: 0 4px 12px rgba(183, 121, 31, .3);
+}
+
+.dashboard-actions .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* =========================================
+   SECTIONS
+   ========================================= */
+
 .section {
     background: white;
+    border: 1px solid #e8e6f0;
     border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(30, 27, 58, .04);
 }
 
-/* Cartes */
+.section h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e1b3a;
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #7b52d4;
+    border-radius: 4px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* =========================================
+   CARTES INTERVENTIONS
+   ========================================= */
+
 .card {
     list-style: none;
-    background: #f8f9fa;
-    border-left: 5px solid #007bff;
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 15px;
-    transition: 0.3s;
+    background: #faf9fc;
+    border: 1px solid #e8e6f0;
+    border-left: 4px solid #7b52d4;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(30, 27, 58, .06);
 }
 
-/* Statuts colorés */
-.status {
-    padding: 5px 12px;
-    border-radius: 20px;
-    color: white;
+.card h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e1b3a;
+    margin: 0 0 8px 0;
+}
+
+.card p {
+    margin: 4px 0;
     font-size: 13px;
-    font-weight: bold;
+    color: #4b5563;
+}
+
+.card p strong {
+    color: #1e1b3a;
+    font-weight: 600;
+}
+
+/* =========================================
+   STATUTS
+   ========================================= */
+
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
 }
 
 .status.en-attente {
-    background: #dc3545;
-}
-.status.affecté {
-    background: #fd7e14;
-}
-.status.en-cours {
-    background: #0d6efd;
-}
-.status.termine {
-    background: #28a745;
+    background: #fdf3e1;
+    color: #b7791f;
 }
 
-/* Actions : statut + rapport */
+.status.affecte {
+    background: #eeedfe;
+    color: #7b52d4;
+}
+
+.status.en-cours {
+    background: #e9efff;
+    color: #4f46e5;
+}
+
+.status.termine {
+    background: #e6f6ed;
+    color: #1e9e63;
+}
+
+/* =========================================
+   MISE À JOUR STATUT
+   ========================================= */
+
 .status-update {
-    margin-top: 15px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e8e6f0;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -62,74 +269,296 @@
 }
 
 .status-update select {
-    padding: 8px 12px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 14px;
+    height: 36px;
+    border: 1px solid #ddd9eb;
+    border-radius: 6px;
+    padding: 0 12px;
+    font-size: 13px;
+    background: white;
+    outline: none;
+    flex: 1;
+    min-width: 150px;
 }
 
+.status-update select:focus {
+    border-color: #7b52d4;
+}
+
+.status-update .btn {
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.status-update .btn-primary {
+    background: #7b52d4;
+    color: white;
+}
+
+.status-update .btn-primary:hover {
+    background: #6842c0;
+}
+
+.status-update .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   RAPPORT
+   ========================================= */
+
 .rapport-add {
-    margin-top: 15px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e8e6f0;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .rapport-add textarea {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 14px;
+    border: 1px solid #ddd9eb;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: inherit;
     resize: vertical;
-    min-height: 80px;
+    min-height: 70px;
+    outline: none;
+    transition: border-color 0.2s ease;
 }
 
-/* Boutons */
-.btn {
-    padding: 8px 16px;
+.rapport-add textarea:focus {
+    border-color: #7b52d4;
+}
+
+.rapport-add textarea::placeholder {
+    color: #9ca3af;
+}
+
+.rapport-add .btn {
+    height: 36px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
+    transition: all 0.2s ease;
+    align-self: flex-start;
 }
 
-.btn-primary {
-    background: #007bff;
+.rapport-add .btn-success {
+    background: #1e9e63;
     color: white;
 }
 
-.btn-primary:hover {
-    background: #0056b3;
+.rapport-add .btn-success:hover {
+    background: #168a56;
 }
 
-.btn-success {
-    background: #28a745;
-    color: white;
-}
+/* =========================================
+   DISPONIBILITÉ
+   ========================================= */
 
-.btn-success:hover {
-    background: #1f8a39;
-}
-
-.btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-/* Messages */
-.error {
-    background: #f8d7da;
-    color: #842029;
-    padding: 12px;
+.disponibilite-card {
+    background: #faf9fc;
+    border: 1px solid #e8e6f0;
     border-radius: 8px;
-    margin-bottom: 15px;
+    padding: 20px;
+    text-align: center;
+}
+
+.disponibilite-card p {
+    font-size: 15px;
+    color: #1e1b3a;
+    margin-bottom: 16px;
+}
+
+.disponibilite-card .status-disponible {
+    color: #1e9e63;
+    font-weight: 700;
+}
+
+.disponibilite-card .status-indisponible {
+    color: #c0392b;
+    font-weight: 700;
+}
+
+.disponibilite-card .btn {
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    padding: 0 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.disponibilite-card .btn:hover {
+    transform: translateY(-2px);
+}
+
+.disponibilite-card .btn-success {
+    background: #1e9e63;
+    color: white;
+}
+
+.disponibilite-card .btn-success:hover {
+    box-shadow: 0 4px 12px rgba(30, 158, 99, .3);
+}
+
+.disponibilite-card .btn-warning {
+    background: #b7791f;
+    color: white;
+}
+
+.disponibilite-card .btn-warning:hover {
+    box-shadow: 0 4px 12px rgba(183, 121, 31, .3);
+}
+
+/* =========================================
+   ÉTAT VIDE
+   ========================================= */
+
+.dashboard-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+}
+
+.dashboard-empty .empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.dashboard-empty strong {
+    display: block;
+    font-size: 16px;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.dashboard-empty span {
+    font-size: 13px;
+}
+
+/* =========================================
+   MESSAGES
+   ========================================= */
+
+.error {
+    background: #fbeae8;
+    color: #c0392b;
+    border: 1px solid #f0c5c0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .success {
-    background: #d1e7dd;
-    color: #0f5132;
-    padding: 12px;
+    background: #e6f6ed;
+    color: #1e9e63;
+    border: 1px solid #b8e6cd;
     border-radius: 8px;
-    margin-bottom: 15px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 16px;
+    }
+
+    .dashboard-container h1 {
+        font-size: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 14px 16px;
+    }
+
+    .stat-card strong {
+        font-size: 20px;
+    }
+
+    .section {
+        padding: 16px;
+    }
+
+    .status-update {
+        flex-direction: column;
+    }
+
+    .status-update select {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .status-update .btn {
+        width: 100%;
+    }
+
+    .rapport-add .btn {
+        width: 100%;
+        align-self: stretch;
+    }
+
+    .dashboard-actions {
+        flex-direction: column;
+    }
+
+    .dashboard-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .disponibilite-card .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-container {
+        padding: 12px;
+    }
+
+    .section {
+        padding: 12px;
+    }
+
+    .card {
+        padding: 12px 14px;
+    }
 }

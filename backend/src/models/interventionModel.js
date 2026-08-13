@@ -1,8 +1,8 @@
 const pool= require('../config/database');
 const Intervention={
     create: async(interventionData)=>{
-        const{ticket_id,technicien_id,description,adresse,priorite}=interventionData;
-        const[result]=await pool.execute("insert into interventions(ticket_id,technicien_id,description,adresse,priorite,statut) values(?,?,?,?,?,?)",[ticket_id,technicien_id,description,adresse,priorite ||"standard" ,"affecté"]);
+        const{ticket_id,technicien_id,description,adresse,priorite,date_prevue,heure_debut,heure_fin}=interventionData;
+        const[result]=await pool.execute("insert into interventions(ticket_id,technicien_id,description,adresse,priorite,statut, date_prevue, heure_debut, heure_fin) values(?,?,?,?,?,?,?,?,?)",[ticket_id,technicien_id,description,adresse,priorite ||"standard" ,"affecté", date_prevue,heure_debut,heure_fin]);
         return result.insertId;
     },
 
@@ -72,5 +72,97 @@ findByTicketId: async(ticket_id)=>{
     const [rows] = await pool.execute("SELECT * FROM interventions WHERE ticket_id = ?",[ticket_id]);
     return rows[0];
 },
+findByWeek: async (dateDebut, dateFin) => {
+
+    const [rows] = await pool.execute(`
+        SELECT 
+            i.*,
+            client.nom AS client_nom,
+            technicien.nom AS technicien_nom,
+            t.description AS ticket_description
+        FROM interventions i
+
+        JOIN tickets t
+            ON i.ticket_id = t.id
+
+        JOIN users AS client
+            ON t.client_id = client.id
+
+        LEFT JOIN users AS technicien
+            ON i.technicien_id = technicien.id
+
+        WHERE i.date_prevue >= ?
+        AND i.date_prevue < DATE_ADD(?, INTERVAL 1 DAY)
+
+        ORDER BY i.date_prevue, i.heure_debut
+    `, [
+        dateDebut,
+        dateFin
+    ]);
+
+    return rows;
+},
+findByMonth: async (annee, mois) => {
+
+    const dateDebut = `${annee}-${String(mois).padStart(2, "0")}-01`;
+
+    const dateFin = new Date(
+        annee,
+        mois,
+        1
+    );
+
+    const dateFinSQL =
+        `${dateFin.getFullYear()}-${String(
+            dateFin.getMonth() + 1
+        ).padStart(2, "0")}-${String(
+            dateFin.getDate()
+        ).padStart(2, "0")}`;
+
+    const [rows] = await pool.execute(`
+        SELECT
+            i.*,
+            client.nom AS client_nom,
+            technicien.nom AS technicien_nom,
+            t.description AS ticket_description
+        FROM interventions i
+
+        JOIN tickets t
+            ON i.ticket_id = t.id
+
+        JOIN users AS client
+            ON t.client_id = client.id
+
+        LEFT JOIN users AS technicien
+            ON i.technicien_id = technicien.id
+
+        WHERE i.date_prevue >= ?
+        AND i.date_prevue < ?
+
+        ORDER BY i.date_prevue, i.heure_debut
+    `, [
+        dateDebut,
+        dateFinSQL
+    ]);
+
+    return rows;
+},
+findByTechnicienIdPourPlanning: async (technicien_id) => {
+
+    const [rows] = await pool.execute(`
+        SELECT
+            id,
+            date_prevue,
+            heure_debut,
+            heure_fin
+        FROM interventions
+        WHERE technicien_id = ?
+        AND date_prevue IS NOT NULL
+        ORDER BY date_prevue, heure_debut
+    `, [technicien_id]);
+
+    return rows;
+},
 };
+
 module.exports =Intervention;

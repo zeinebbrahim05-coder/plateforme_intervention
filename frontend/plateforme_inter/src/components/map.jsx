@@ -1,10 +1,8 @@
 import{MapContainer,TileLayer, Marker, Popup} from 'react-leaflet';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import{technicienIcon,clientIcon, MapCluster} from './mapIcons.jsx';
 
-function Map({techniciens=[], interventions=[], users=[], tickets=[]}){
+function Map({interventions=[], users=[], tickets=[]}){
     return(
         <MapContainer key="map-container" center={[36.8065, 10.1815]} zoom={13} style={{height: '400px', width:'100%'}}>
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'/>

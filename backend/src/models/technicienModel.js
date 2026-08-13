@@ -12,6 +12,12 @@ const Technicien={
             and users.longitude is not null`);
         return rows;
     },
+    findAll: async()=>{
+        const [rows] =await pool.execute(`
+            select techniciens.id, techniciens.user_id, techniciens.competences, techniciens.disponible, users.nom, users.email, users.latitude, users.longitude
+            from techniciens join users on techniciens.user_id= users.id`);
+            return rows;
+    },
     create: async(user_id)=>{
         const [result]= await pool.execute(
             "insert into techniciens(user_id, competences, disponible) values(?,'',true)",

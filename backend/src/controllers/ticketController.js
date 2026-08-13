@@ -49,10 +49,15 @@ const getTicketById=async(req,res)=>{
                 message:"ticket non trouvé"
             });
         }
+        if(req.user.role==='client' && ticket.client_id!==req.user.id){
+            return res.status(403).json({
+                success:false,
+                message:"accès refusé"
+            });
+        }
         return res.status(200).json({
             success:true,
             ticket
-
         });
     }catch(error){
         console.error(error);

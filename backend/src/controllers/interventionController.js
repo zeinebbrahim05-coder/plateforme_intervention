@@ -3,10 +3,11 @@ const Ticket = require('../models/ticketModel');
 const Technicien = require('../models/technicienModel');
 const {distanceKm}=require('../utils/distance');
 const{scoreFinal}=require('../utils/scoring');
+const { trouverCreneauDisponible }=require( '../utils/planning');
 const User = require('../models/userModel');
 const create=async(req,res)=>{
     try{
-        const {ticket_id,technicien_id,description,adresse,priorite}=req.body;
+        const {ticket_id,technicien_id,description,adresse,priorite,date_prevue, heure_debut, heure_fin}=req.body;
         const existante= await Intervention.findByTicketId(ticket_id);
         if(existante){
             return res.status(400).json({
@@ -28,7 +29,7 @@ const create=async(req,res)=>{
                 message:"ce technicien n'est pas disponible"
             });
         }
-        const newIntervention=await Intervention.create({ticket_id,technicien_id,description,adresse,priorite});
+        const newIntervention=await Intervention.create({ticket_id,technicien_id,description,adresse,priorite,date_prevue,heure_debut,heure_fin});
         await Technicien.updateDisponibilite(technicien_id,false);
         await Ticket.updateStatus(ticket_id,'affecte');
         return res.status(201).json({
@@ -254,8 +255,6 @@ const getAllInterventions = async (req, res) => {
 };
 const affecterTechnicien=async(req,res)=>{
     try{
-        console.log('req.params:',req.params);
-        console.log('req.body:',req.body);
         const id =req.params.id;
         const{technicien_id}=req.body;
         const intervention=await Intervention.findById(id);
@@ -266,7 +265,15 @@ const affecterTechnicien=async(req,res)=>{
             });
 
         }
+        const technicienInfo=await Technicien.findByUserId(technicien_id);
+        if(!technicienInfo || !technicienInfo.disponible){
+            return res.status(400).json({
+                success:false,
+                message:"ce technicien n'est pas disponible"
+            });
+        }
         await Intervention.updateTechnicien(id,technicien_id);
+        await Technicien.updateDisponibilite(technicien_id,false);
         return res.status(200).json({
             success:true,
             message:"technicien affecté avec succès"
@@ -279,36 +286,52 @@ const affecterTechnicien=async(req,res)=>{
         });
     }
 };
-const autoAffecter=async(req,res)=>{
-    try{
-        const ticketId=req.params.ticketId;
-        const ticket=await Ticket.findByIdWithLocation(ticketId);
-        if(!ticket){
-            return res.status(404).json({success:false,message:"ticket non trouvé"});
+const autoAffecter = async (req, res) => {
+    try {
+        const ticketId = req.params.ticketId;
+        const ticket =await Ticket.findByIdWithLocation(ticketId);
+        if (!ticket) {
+            return res.status(404).json({
+                success: false,
+                message: "ticket non trouvé"
+            });
         }
-        const existante=await Intervention.findByTicketId(ticket.id);
-        if(existante){
+        const existante =await Intervention.findByTicketId(ticket.id);
+        if (existante) {
             return res.status(400).json({
-                success:false,
-                message:"une intervention existe deja pour ce ticket"
+                success: false,
+                message: "une intervention existe deja pour ce ticket"
             });
         }
-        if (ticket.client_latitude===null||ticket.client_longitude===null){
-            return res.status(400).json({success:false,message:"position du client inconnue, affectation automatique impossible"});
-        }
-        const disponible=await Technicien.findDisponible();
-        if(disponible.length===0){
-            return res.status(404).json({success:false,
-                message:"aucun technicien disponible"
+        if (
+            ticket.client_latitude === null ||
+            ticket.client_longitude === null
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "position du client inconnue, affectation automatique impossible"
             });
         }
-        const avecDistance=disponible.map(t=>({
-            ...t, distance:distanceKm(ticket.client_latitude,ticket.client_longitude, t.latitude, t.longitude)
+        const disponible =await Technicien.findDisponible();
+        if (disponible.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "aucun technicien disponible"
+            });
+        }
+        const avecDistance = disponible.map(t => ({...t,
+            distance: distanceKm(
+                ticket.client_latitude,
+                ticket.client_longitude,
+                t.latitude,
+                t.longitude
+            )
         }));
-        const distanceMax = Math.max(...avecDistance.map(t=>t.distance), 0.0001);
-
-        const avecScore = avecDistance.map(t=>{
-            const { score, detail } = scoreFinal({
+        const distanceMax =
+            Math.max(...avecDistance.map(t => t.distance),0.0001
+            );
+        const avecScore = avecDistance.map(t => {
+            const {score,detail} = scoreFinal({
                 distance: t.distance,
                 distanceMax,
                 competences: t.competences,
@@ -316,34 +339,124 @@ const autoAffecter=async(req,res)=>{
                 chargeActuelle: t.charge_actuelle,
                 priorite: ticket.priorite
             });
-            return { ...t, score, detail };
+            return {...t,score,detail};
+
         });
-        avecScore.sort((a,b)=>b.score - a.score);
-        const meilleur=avecScore[0];
-        const interventionId=await Intervention.create({
-            ticket_id:ticket.id, technicien_id:meilleur.user_id,
-            description:ticket.description,
-            adresse:ticket.adresse,
-            priorite: ticket.priorite
-        });
-        await Ticket.updateStatus(ticket.id,'affecte');
-        await Technicien.updateDisponibilite(meilleur.user_id, false);
+        avecScore.sort(
+            (a, b) => b.score - a.score
+        );
+        const meilleur = avecScore[0];
+        const interventionsTechnicien =
+            await Intervention.findByTechnicienIdPourPlanning(
+                meilleur.user_id
+            );
+
+        const creneau =trouverCreneauDisponible(interventionsTechnicien,
+                60
+            );
+
+        if (!creneau) {
+            return res.status(400).json({
+                success: false,
+                message:"Aucun créneau disponible pour ce technicien dans les 30 prochains jours"
+            });
+        }
+        const interventionId =
+            await Intervention.create({
+                ticket_id: ticket.id,
+                technicien_id: meilleur.user_id,
+                description: ticket.description,
+                adresse: ticket.adresse,
+                priorite: ticket.priorite,
+                date_prevue: creneau.date,
+                heure_debut: creneau.heureDebut,
+                heure_fin: creneau.heureFin
+            });
+        await Ticket.updateStatus(
+            ticket.id,
+            "affecte"
+        );
+        await Technicien.updateDisponibilite(
+            meilleur.user_id,
+            false
+        );
         return res.status(201).json({
-            success:true,
-            message:"techncien affecté automatiquement",
+            success: true,
+            message:"technicien affecté automatiquement",
             interventionId,
-            technicien:{id: meilleur.user_id, nom:meilleur.nom, distance_km:Math.round(meilleur.distance*10)/10,
-                score: Math.round(meilleur.score*100)/100,
-                charge_actuelle:meilleur.charge_actuelle,
-                detail_score: meilleur.detail
-            }
+            technicien: {
+                id: meilleur.user_id,
+                nom: meilleur.nom,
+                distance_km:
+                    Math.round(meilleur.distance * 10) / 10,
+                score:
+                    Math.round(
+                        meilleur.score * 100
+                    ) / 100,
+                charge_actuelle:
+                    meilleur.charge_actuelle,
+                detail_score:
+                    meilleur.detail
+            },
+            creneau: {date: creneau.date,heure_debut:creneau.heureDebut,heure_fin:creneau.heureFin}
+        });
+    } catch (error) {
+        console.error( "MESSAGE :",error.message);
+        return res.status(500).json({
+            success: false,
+            message:"erreur lors de laffectation automatique",
+            error: error.message
+        });
+    }
+
+};
+const getInterventionsByWeek = async (req, res) => {
+    try {
+
+        const { date } = req.params;
+        const dateActuelle = new Date(`${date}T00:00:00`);
+        const jour = dateActuelle.getDay();
+        const difference = jour === 0 ? -6 : 1 - jour;
+        const debut = new Date(dateActuelle);
+        debut.setDate( debut.getDate() + difference);
+        const fin = new Date(debut);
+        fin.setDate(fin.getDate() + 6);
+        const formatDateSQL = (date) => {
+            const annee =date.getFullYear();
+            const mois =String(date.getMonth() + 1).padStart(2, "0");
+            const jour = String(date.getDate()).padStart(2, "0");
+            return `${annee}-${mois}-${jour}`;
+        };
+        const dateDebut =formatDateSQL(debut);
+        const dateFin = formatDateSQL(fin);
+        console.log("Planning semaine :", dateDebut, "→", dateFin);
+        const interventions = await Intervention.findByWeek(dateDebut,dateFin );
+        return res.status(200).json({
+            success: true,
+            interventions
+        });
+    } catch (error) {
+        console.error("Erreur getInterventionsByWeek :",error);
+        return res.status(500).json({
+            success: false,
+            message: "Erreur lors de la récupération des interventions"
+        });
+    }
+};
+const getIntereventionsByMonth=async(req,res)=>{
+    try{
+        const {annee, mois}=req.params;
+        const interventions=await Intervention.findByMonth(annee,mois);
+        return res.status(200).json({
+            success:true,
+            interventions
         });
     }catch(error){
         console.error(error);
         return res.status(500).json({
             success:false,
-            message:"erreur lors de laffectation automatique"
+            message:"erreur lors de la recuperation des interventions"
         });
     }
-};
-module.exports={create,getClientInterventions,getTechnicienInterventions,getInterventionById,updateInterventionStatus,addRapport,getRapport,addEvaluation,getAllInterventions,affecterTechnicien,autoAffecter};
+}
+module.exports={create,getClientInterventions,getTechnicienInterventions,getInterventionById,updateInterventionStatus,addRapport,getRapport,addEvaluation,getAllInterventions,affecterTechnicien,autoAffecter,getInterventionsByWeek,getIntereventionsByMonth};

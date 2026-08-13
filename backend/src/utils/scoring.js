@@ -10,7 +10,10 @@ function chargeScore(nombreInterventionsActives){
 }
 function distanceScore(distance, distanceMax){
     if(distanceMax<=0) return 1;
-    return 1-(distance/distanceMax);
+    if(distanceMax===distance){
+        return 1;
+    }
+    return Math.max(0,1 - (distance/distanceMax));
 }
 function scoreFinal({distance, distanceMax, competences, description, chargeActuelle, priorite}){
     const urgent= priorite ==='urgent';

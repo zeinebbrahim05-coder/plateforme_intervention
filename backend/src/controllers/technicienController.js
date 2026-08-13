@@ -21,4 +21,19 @@ const updateDisponibilite=async(req,res)=>{
         });
     }
 }
-module.exports={updateDisponibilite};
+const getAllTechniciens = async(req,res)=>{
+    try{
+        const techniciens = await Technicien.findAll();
+        return res.status(200).json({
+            success:true,
+            techniciens
+        });
+    }catch(error){
+        console.error(error);
+        return res.status(500).json({
+            success:false,
+            message:"erreur lors de la recuperation des techniciens"
+        });
+    };
+}
+module.exports={updateDisponibilite, getAllTechniciens};

@@ -24,6 +24,7 @@ export const addRapport=(id,data)=>api.put(`/interventions/${id}/rapport`,data);
 export const getAllTickets=()=>api.get('/tickets');
 export const getAllInterventions=()=>api.get('/interventions');
 export const getAllUsers=()=>api.get('/users');
+export const getAllTechniciens=()=>api.get('/techniciens');
 export const affecterTechnicien=(id,data)=>api.put(`/interventions/${id}/affecter`,data);
 export const updateTicketStatus=(id,data)=>api.put(`/tickets/${id}/statut`,data);
 export const updateUserLocation=(latitude, longitude)=>api.put('/users/location',{latitude,longitude});
@@ -32,4 +33,6 @@ export const updateDisponibilite=(disponible)=>api.put('/techniciens/disponibili
 export const updateUser = (id, data) => api.put(`/users/${id}`, data);
 export const createUser=(data)=>api.post('/users',data);
 export const deleteUser=(id)=>api.delete(`/users/${id}`);
+export const getInterventionsByWeek=(date)=>api.get(`/interventions/semaine/${date}`);
+export const getIntereventionsByMonth=(annee,mois)=>api.get(`/interventions/mois/${annee}/${mois}`);
 export default api;
